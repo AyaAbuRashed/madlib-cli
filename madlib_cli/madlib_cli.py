@@ -19,7 +19,7 @@ def welcome_msg():
 def read_template():
    
     try:
-        with open('./files/example.txt','r') as file :
+        with open('./files/test.txt','r') as file :
             contents=file.read()
         print("Is the file Closed? " , file.closed)
         return contents
@@ -28,6 +28,16 @@ def read_template():
         print(f"THERE IS AN ERROR in read_template, IS {e}")
     
 
+def read_template2(path):
+   
+    try:
+        with open(path,'r') as file :
+            contents=file.read()
+        print("Is the file Closed? " , file.closed)
+        return contents
+
+    except Exception as e:
+        print(f"THERE IS AN ERROR in read_template, IS {e}")
 
 def copy_file():
   
@@ -40,34 +50,25 @@ def copy_file():
         print(f"THERE IS AN ERROR in copy_file, IS {e}")
 
 
-inserts=[]
-def parse(string):
-    
-    try:
-        inputs=[]
-        match =(r"(?<={)[\w'<>' -]+(?=})")
-        inputs += re.findall(match, string)
-        for i in inputs:
-            insert=input(f"Insert {i} : ")
-            if  insert.isdigit()==False:
-                print(insert.isdigit()," Keep going inserting string")
-                inserts.append(insert)
-            elif insert.isdigit() == True:
-                print(insert.isdigit(),"ALERT!!! you inserted a number")
-                print ("YOU SHOULD INSTER A STRING, NOT ALLOWED TO INSERT NUMBERS.")
-        return inputs
-    except Exception as error:
-        print(f"THERE IS AN ERROR IN parse, IS {error}" )
-    return inserts
+def parse(text):
+    placeholders = re.findall(r"\{(.*?)\}", text)
+    words = re.sub(r"\{(.*?)\}", "$", text)
+    return words, placeholders
 
-def merge(read,insert): 
-  
-    try:
-        contents = read
-        for words in range(21):
-            start = contents.find("{")
-            end = contents.find("}") + 1
-            contents = contents[:start] + insert[words] + contents[end:]
-        print(contents)
-    except Exception as error:
-        print(f"THERE IS AN ERROR in merge, IS {error}")
+def  merge(words, user_words):
+    for word in user_words:
+        words = words.replace("$", word, 1)
+    return(words)
+
+
+if __name__ == "__main__":
+    text = read_template()
+    words, placeholders = parse(text)
+    user_words = []
+    for placeholder in placeholders:
+        user_words.append(input(f"Enter a {placeholder}: "))
+    result = merge(words, user_words)
+    f = open("./files/result.txt", "w")
+    f.write(result)
+    print("******* The result : ************")
+    print(result)
